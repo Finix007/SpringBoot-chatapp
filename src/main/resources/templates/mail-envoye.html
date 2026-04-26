@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email envoyé</title>
+
+  <!-- Import your main CSS -->
+  <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+
+<body class="auth-body">
+
+<div class="auth-container">
+
+  <div class="auth-brand">
+    <div class="brand-icon">📧</div>
+    <div class="brand-name">ChatWave</div>
+    <div class="brand-tagline">Confirmation requise</div>
+  </div>
+
+  <div class="auth-card">
+
+    <div class="auth-title">
+      Email de confirmation envoyé
+    </div>
+
+    <div class="alert alert-success">
+      Un email a été envoyé à :
+      <br><br>
+      <span class="user-public-id" th:text="${email}">
+        votre@email.com
+      </span>
+    </div>
+
+    <div class="alert small">
+      📌 Consultez votre boîte de réception et cliquez sur le lien.<br>
+      ⏱️ Le lien expire dans <strong>15 minutes</strong>.
+    </div>
+
+    <a href="/auth/register" class="btn btn-accent btn-full" style="margin-top:16px;">
+      ← Retour au formulaire
+    </a>
+
+  </div>
+
+</div>
+
+</body>
+</html>

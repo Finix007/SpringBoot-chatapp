@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Chat with ' + ${otherUser.username} + ' — ChatWave'">Chat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body class="app-body">
+
+<!-- Thymeleaf injects server-side data into JS variables -->
+<script th:inline="javascript">
+    const CURRENT_USER_ID = /*[[${currentUser.id}]]*/ 0;
+    const CURRENT_USERNAME = /*[[${currentUser.username}]]*/ '';
+    const ROOM_ID = /*[[${room.id}]]*/ 0;
+    const INITIAL_MESSAGES = /*[[${messages}]]*/ [];
+</script>
+
+<div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-logo">⚡ ChatWave</div>
+            <form th:action="@{/auth/logout}" method="post">
+                <button type="submit" class="btn-logout" title="Logout">→</button>
+            </form>
+        </div>
+
+        <div class="user-id-card">
+            <div class="user-avatar" th:text="${#strings.substring(currentUser.username, 0, 1).toUpperCase()}"></div>
+            <div class="user-info">
+                <div class="user-name" th:text="${currentUser.username}"></div>
+                <div class="user-id-row">
+                    <span class="user-public-id" id="publicIdDisplay" th:text="${currentUser.publicId}"></span>
+                    <button class="btn-copy" onclick="copyId()" title="Copy ID">⎘</button>
+                </div>
+                <div class="copy-hint">Share your ID to receive messages</div>
+            </div>
+        </div>
+
+        <div class="new-chat-section">
+            <p class="section-label">New Conversation</p>
+            <form th:action="@{/chat/create}" method="post" class="new-chat-form">
+                <input type="text" name="targetPublicId" placeholder="Enter user ID..." class="input-sm" required>
+                <button type="submit" class="btn btn-accent btn-sm">Start →</button>
+            </form>
+        </div>
+
+        <div class="conversations-section">
+            <p class="section-label">Conversations</p>
+            <div class="conversation-list">
+                <a th:href="@{/dashboard}" class="conversation-item back-link">← Dashboard</a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Chat Area -->
+    <main class="chat-main">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="chat-header-avatar" th:text="${#strings.substring(otherUser.username, 0, 1).toUpperCase()}"></div>
+            <div class="chat-header-info">
+                <div class="chat-header-name" th:text="${otherUser.username}"></div>
+                <div class="chat-header-status" id="connectionStatus">Connecting...</div>
+            </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="messages-area" id="messagesArea">
+            <!-- Messages rendered by JS -->
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator-bar" id="typingIndicatorBar" style="display:none;">
+            <div class="typing-bubble">
+                <span class="typing-dots">
+                    <span></span><span></span><span></span>
+                </span>
+                <span class="typing-label" id="typingLabel"></span>
+            </div>
+        </div>
+
+        <!-- Image Preview -->
+        <div class="image-preview-bar" id="imagePreviewBar" style="display:none;">
+            <img id="imagePreviewImg" src="" alt="preview">
+            <button class="btn-remove-img" onclick="clearImagePreview()">✕</button>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chat-input-area">
+            <label for="imageUpload" class="btn-icon" title="Send image">
+                📷
+                <input type="file" id="imageUpload" accept="image/*" style="display:none;" onchange="handleImageSelect(event)">
+            </label>
+            <input type="text" id="messageInput" class="message-input" placeholder="Type a message..." autocomplete="off">
+            <button class="btn btn-send" onclick="sendMessage()">Send ↑</button>
+        </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+<script th:src="@{/chat.js}"></script>
+
+<script>
+    function copyId() {
+        const id = document.getElementById('publicIdDisplay').textContent;
+        navigator.clipboard.writeText(id).then(() => {
+            const btn = document.querySelector('.btn-copy');
+            btn.textContent = '✓';
+            btn.style.color = '#4ade80';
+            setTimeout(() => { btn.textContent = '⎘'; btn.style.color = ''; }, 1500);
+        });
+    }
+</script>
+
+</body>
+</html>
